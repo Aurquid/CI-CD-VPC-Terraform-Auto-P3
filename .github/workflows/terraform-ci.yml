@@ -15,13 +15,14 @@ jobs:
       id-token: write
 
     steps:
-      - name: Checkout repository
+      - name: Checkout P3 Repo
         uses: actions/checkout@v4
 
-      - name: Clone Production VPC (P1) Repository
-        run: |
-          git clone https://github.com/Aurquid/Terraform-Production-VPC-P1.git p1
-          cd p1
+      - name: Checkout Production VPC (P1) Repo
+        uses: actions/checkout@v4
+        with:
+          repository: Aurquid/Terraform-Production-VPC-P1
+          path: p1
 
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
@@ -33,17 +34,22 @@ jobs:
         uses: hashicorp/setup-terraform@v3
 
       - name: Terraform Init
+        working-directory: ./p1
         run: terraform init
 
       - name: Terraform Format
+        working-directory: ./p1
         run: terraform fmt -check
 
       - name: Terraform Validate
+        working-directory: ./p1
         run: terraform validate
 
       - name: Terraform Plan
+        working-directory: ./p1
         run: terraform plan -out=tfplan
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
+        working-directory: ./p1
         run: terraform apply -auto-approve tfplan
