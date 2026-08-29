@@ -18,6 +18,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Clone Production VPC (P1) Repository
+        run: |
+          git clone https://github.com/Aurquid/Terraform-Production-VPC-P1.git p1
+          cd p1
+
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
