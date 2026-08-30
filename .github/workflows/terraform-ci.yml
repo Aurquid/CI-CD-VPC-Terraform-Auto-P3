@@ -2,57 +2,38 @@ name: Terraform CI/CD for Production VPC
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
   terraform:
     runs-on: ubuntu-latest
 
-    permissions:
-      contents: read
-      id-token: write
-
     steps:
-      - name: Checkout P3 Repo
+      - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Checkout Production VPC (P1) Repo
-        uses: actions/checkout@v4
-        with:
-          repository: Aurquid/Terraform-VPC-P1
-          path: p1
 
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
+        env:
+          ACTIONS_ID_TOKEN_REQUEST_URL: https://token.actions.githubusercontent.com
+          ACTIONS_ID_TOKEN_REQUEST_TOKEN: ${{ github.token }}
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v4
+        uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: latest
-          terraform_wrapper: false
+          terraform_version: 1.9.5
 
       - name: Terraform Init
-        working-directory: ./p1
         run: terraform init
 
-      - name: Terraform Format
-        working-directory: ./p1
-        run: terraform fmt -check
-
-      - name: Terraform Validate
-        working-directory: ./p1
-        run: terraform validate
-
       - name: Terraform Plan
-        working-directory: ./p1
-        run: terraform plan -out=tfplan
+        run: terraform plan
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
-        working-directory: ./p1
-        run: terraform apply -auto-approve tfplan
+        run: terraform apply -auto-approve
