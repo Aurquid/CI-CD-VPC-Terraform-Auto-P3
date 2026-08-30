@@ -21,7 +21,7 @@ jobs:
       - name: Checkout Production VPC (P1) Repo
         uses: actions/checkout@v4
         with:
-          repository: Aurquid/Terraform-Production-VPC-P1
+          repository: Aurquid/Terraform-VPC-P1
           path: p1
 
       - name: Configure AWS credentials (OIDC)
