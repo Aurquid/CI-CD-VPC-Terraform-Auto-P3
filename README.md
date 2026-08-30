@@ -1,5 +1,5 @@
 # Overview
-j
+
 # Table of Contents
 * [Overview](#overview)
 * [Architecture Diagram](#architecture-diagram)
