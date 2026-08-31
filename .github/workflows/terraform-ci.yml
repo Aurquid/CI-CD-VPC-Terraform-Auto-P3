@@ -11,29 +11,35 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout P1 repository
         uses: actions/checkout@v4
+        with:
+          repository: Aurquid/Terraform-vpc-p1
+          path: p1
 
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
-        env:
-          ACTIONS_ID_TOKEN_REQUEST_URL: https://token.actions.githubusercontent.com
-          ACTIONS_ID_TOKEN_REQUEST_TOKEN: ${{ github.token }}
         with:
-          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          role-to-assume: arn:aws:iam::946509368278:role/GitHubOIDC-TerraformRole
+          aws-region: us-east-1
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.9.5
+          terraform_version: 1.16.0
 
       - name: Terraform Init
-        run: terraform init
+        run: |
+          cd p1
+          terraform init
 
       - name: Terraform Plan
-        run: terraform plan
+        run: |
+          cd p1
+          terraform plan
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
-        run: terraform apply -auto-approve
+        run: |
+          cd p1
+          terraform apply -auto-approve
