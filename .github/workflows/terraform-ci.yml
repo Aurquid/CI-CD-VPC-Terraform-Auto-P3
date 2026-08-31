@@ -8,11 +8,7 @@ on:
 
 jobs:
   terraform:
-    strategy:
-      fail-fast: false
-      matrix:
-        region: [ubuntu-latest, ubuntu-24.04, ubuntu-22.04]
-    runs-on: ${{ matrix.region }}
+    runs-on: ubuntu-24.04
     permissions:
       id-token: write
       contents: read
