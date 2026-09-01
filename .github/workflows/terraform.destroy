@@ -1,0 +1,66 @@
+name: Terraform Destroy for Production VPC
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: "Type DESTROY to confirm running terraform destroy"
+        required: true
+        default: ""
+
+jobs:
+  destroy:
+    name: Destroy Terraform-managed infrastructure (manual)
+    runs-on: ubuntu-24.04
+    permissions:
+      id-token: write
+      contents: read
+    env:
+      TF_IN_AUTOMATION: "1"
+
+    steps:
+      - name: Checkout P1 repository
+        uses: actions/checkout@v4
+        with:
+          repository: Aurquid/Terraform-vpc-p1
+          path: p1
+          # repo is public so no token needed. If that repo becomes private, add:
+          # token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+
+      - name: Fail if not confirmed
+        run: |
+          if [ "${{ github.event.inputs.confirm }}" != "DESTROY" ]; then
+            echo "Confirmation input does not equal 'DESTROY' - aborting"
+            exit 1
+          fi
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v6.2.4
+        with:
+          role-to-assume: arn:aws:iam::946509368278:role/GithubOIDC-TerraformRole
+          aws-region: us-east-1
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.16.0
+
+      - name: Terraform Init
+        working-directory: p1/TFP1
+        run: |
+          terraform init -input=false -reconfigure
+
+      - name: Terraform Plan (destroy)
+        working-directory: p1/TFP1
+        run: |
+          terraform plan -destroy -out=destroy.tfplan
+
+      - name: Show destroy plan (for logs)
+        working-directory: p1/TFP1
+        run: |
+          terraform show -no-color destroy.tfplan
+
+      - name: Terraform Apply (destroy)
+        working-directory: p1/TFP1
+        run: |
+          terraform apply -auto-approve destroy.tfplan
