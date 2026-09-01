@@ -75,3 +75,9 @@ jobs:
         run: |
           cd p1/TFP1
           terraform apply -auto-approve tfplan
+      - name: Terraform Destroy
+        if: github.ref == 'refs/heads/main'
+        run: |
+          cd p1/TFP1
+          terraform destroy -auto-approve
+      
