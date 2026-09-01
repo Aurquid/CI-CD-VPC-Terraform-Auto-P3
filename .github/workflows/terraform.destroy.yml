@@ -1,0 +1,30 @@
+name: Terraform Destroy
+on:
+  workflow_dispatch:
+
+jobs:
+  destroy:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: "arn:aws:iam::946509368278:oidc-provider/token.actions.githubusercontent.com"
+          aws-region: us-east-1
+
+      - name: Terraform Init
+        run: |
+          cd p1
+          terraform init
+
+      - name: Terraform Destroy
+        run: |
+          cd p1
+          terraform destroy -auto-approve
