@@ -1,11 +1,16 @@
-name: Terraform Destroy (manual)
+name: Terraform Destroy (manual, us-east-2)
 
 on:
   workflow_dispatch:
+    inputs:
+      confirm:
+        description: "Type DESTROY to confirm running terraform destroy"
+        required: true
+        default: ""
 
 jobs:
   destroy:
-    name: Init and Destroy
+    name: Init → Plan (destroy) → Apply (destroy)
     runs-on: ubuntu-24.04
     permissions:
       id-token: write
@@ -20,11 +25,18 @@ jobs:
           repository: Aurquid/Terraform-vpc-p1
           path: p1
 
+      - name: Require confirmation
+        run: |
+          if [ "${{ github.event.inputs.confirm }}" != "DESTROY" ]; then
+            echo "Confirmation not given — aborting"
+            exit 1
+          fi
+
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v6.2.4
         with:
           role-to-assume: arn:aws:iam::946509368278:role/GithubOIDC-TerraformRole
-          aws-region: us-west-2
+          aws-region: us-east-2
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -35,6 +47,14 @@ jobs:
         working-directory: p1/TFP1
         run: terraform init -input=false -reconfigure
 
-      - name: Terraform Destroy
+      - name: Terraform Plan (destroy)
         working-directory: p1/TFP1
-        run: terraform destroy -auto-approve
+        run: terraform plan -destroy -out=destroy.tfplan
+
+      - name: Show destroy plan (logs)
+        working-directory: p1/TFP1
+        run: terraform show -no-color destroy.tfplan
+
+      - name: Terraform Apply (destroy)
+        working-directory: p1/TFP1
+        run: terraform apply -auto-approve destroy.tfplan
