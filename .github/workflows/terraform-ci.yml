@@ -75,9 +75,5 @@ jobs:
         run: |
           cd p1/TFP1
           terraform apply -auto-approve tfplan
-      - name: Terraform Destroy
-        if: always()  # Ensures destroy runs even if apply fails
-        run: |
-         cd p1/TFP1
-          terraform destroy -auto-approve
+    
       
