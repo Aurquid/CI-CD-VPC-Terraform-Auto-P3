@@ -1,4 +1,4 @@
-name: Terraform Destroy (manual, us-east-2)
+name: Terraform Destroy (manual, us-east-1)
 
 on:
   workflow_dispatch:
