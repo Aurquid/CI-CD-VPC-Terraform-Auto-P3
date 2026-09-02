@@ -45,7 +45,10 @@ jobs:
 
       - name: Terraform Init
         working-directory: p1/TFP1
-        run: terraform init -input=false -reconfigure
+        run: terraform init -input=false -reconfigure \
+                            -backend-config="bucket=tfstate-p1-backend" \
+                            -backend-config="key=terraform/state.tfstate" \
+                            -backend-config="region=us-east-1"
 
       - name: Terraform Plan (destroy)
         working-directory: p1/TFP1
