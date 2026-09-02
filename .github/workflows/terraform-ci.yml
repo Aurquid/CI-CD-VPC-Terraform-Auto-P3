@@ -28,7 +28,7 @@ jobs:
             const payload = JSON.parse(
               Buffer.from(token.split('.')[1], 'base64url').toString()
             )
-      
+       
             core.info(`iss: ${payload.iss}`)
             core.info(`aud: ${payload.aud}`)
             core.info(`sub: ${payload.sub}`)
