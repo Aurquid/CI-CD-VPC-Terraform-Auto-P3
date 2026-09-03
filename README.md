@@ -45,7 +45,24 @@
 # Failure Scenario & Recovery Playbook
 
 # Lessons Learned
-
+### OIDC Authentication
+* Setting up OIDC requires underrstanding how GitHub Actions recognizes a workflow with token claims(iss,aud,sub)
+* The trust policy must match the exact `sub` format to avoid AWS rejecting the `GithubOIDC-TerraformRole`
+* OIDC removes the need for long-lived AWS keys
+### S3 Remote State Backend
+* Terraform must use the same `S3 backend bucket` for every run with GitHub Actions
+* If backend changes then the `Terraform-Destroy.yml` will not destroy resources properly
+### IAM Role Design for CI/CD
+* Small JSON mistakes can break authentication with OIDC
+* Following least-privlege keeps role secure and lower attack surface
+### Pipeline Behavior and Terraform Execution
+* `Terraform init` is the first place to identify backend issues
+* `Terraform plan` in CI/CD is more strict with missing variables or backend configurations
+* `Terraform apply` logs are essential to see what successfully deployed
+### Destroying Infrastructure through CI/CD
+* Destroy only works when the pipeline shares the same backend and role
+* Missing state or wrong IAM roles prevents proper destruction
+* Running `Terraform destroy` through CI/CD shows how Terraforms relies on remote sate to track every resource to destroy 
 # Screenshots
 
 ### GitHub Actions
@@ -82,35 +99,35 @@ The SSM role used by the EC2 instances within the VPC to connect to  AWS Systems
 
 
 ### VPC
+The VPC created by GitHub Actions shows successful deployment 
 <img width="1115" height="569" alt="Screenshot 2026-09-02 153340" src="https://github.com/user-attachments/assets/957379c9-7e60-45b8-a96b-995a3bf572ad" />
-
+The pubic and private subnets for the two instances
 <img width="1116" height="543" alt="Screenshot 2026-09-02 153654" src="https://github.com/user-attachments/assets/9da794d8-862e-4537-9dbb-2b8c63bab6af" />
-
+The route tables that is connected to the VPC
 <img width="1114" height="566" alt="Screenshot 2026-09-02 153707" src="https://github.com/user-attachments/assets/24a8bb47-7240-4b17-b967-219d17d55b2d" />
 
-
+The Internet Gateway(IGW) used by the VPC
 <img width="1118" height="567" alt="Screenshot 2026-09-02 153720" src="https://github.com/user-attachments/assets/2c4b380d-82cd-4160-8bc8-b1c165039417" />
-
+The NAT Gateway used by the VPC
 <img width="1118" height="571" alt="Screenshot 2026-09-02 153745" src="https://github.com/user-attachments/assets/42e51a93-b271-465a-b0a8-25f8cb0ece51" />
 
-
+The Security Groups for the Auto Load Balancer(ALB) and EC2
 <img width="1118" height="568" alt="Screenshot 2026-09-02 153757" src="https://github.com/user-attachments/assets/a3749d95-cc89-4ebb-963e-ddb504a1fc2e" />
-
+The Elastic IP address used by the NAT Gateway
 <img width="1114" height="560" alt="Screenshot 2026-09-02 153832" src="https://github.com/user-attachments/assets/76719965-e04e-45ca-81c8-48cce54b52d6" />
 
 
 
 
 ### EC2
+The two instances for the VPC running healthy
 <img width="1119" height="564" alt="Screenshot 2026-09-02 154245" src="https://github.com/user-attachments/assets/b01e3602-8128-4388-9203-5fc85af1ef90" />
 
-<img width="1108" height="563" alt="Screenshot 2026-09-02 154305" src="https://github.com/user-attachments/assets/c0a95342-94d7-445c-926f-b9b78cdea3a0" />
-
-
+Load Balancer connected to the VPC that is used towards the EC2  
 <img width="1115" height="563" alt="Screenshot 2026-09-02 154323" src="https://github.com/user-attachments/assets/a8ec2796-1d4b-4a4c-bdf7-94239947f7db" />
 
-
+Target Groups that show that the EC2 instances passed the health checks
 <img width="1114" height="565" alt="Screenshot 2026-09-02 154340" src="https://github.com/user-attachments/assets/89c459a6-c38f-4dbf-bb28-5fba8ba341f9" />
 
-
+The Auto Scaling Group(ASG) details used by the EC2 instances
 <img width="1103" height="557" alt="Screenshot 2026-09-02 154357" src="https://github.com/user-attachments/assets/288c4708-cc7c-4ec8-bfce-1300d40ebacd" />
