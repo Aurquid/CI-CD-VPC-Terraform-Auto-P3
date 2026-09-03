@@ -49,12 +49,13 @@
 # Screenshots
 
 ### GitHub Actions
-Tapply
+This screenshot shows the deployed infrastructure for all 26 resources via GitHub Actions with the outputs
 
 <img width="1064" height="425" alt="Screenshot 2026-09-02 152457" src="https://github.com/user-attachments/assets/7c5774b3-b71f-4cc0-90b1-a80ff4b60861" />
+Log confirms the OIDC token claims that is sent by GitHub Actions to AWS during authentication
 
 <img width="1097" height="374" alt="Screenshot 2026-09-02 152425" src="https://github.com/user-attachments/assets/a2b6759b-cf34-411f-ba22-f2207481de6c" />
-
+This screenshot shows terraform initialization successfully connected to the S3 backend 
 <img width="796" height="411" alt="Screenshot 2026-09-02 152528" src="https://github.com/user-attachments/assets/f0947abc-b95d-4b16-af47-3e460f94dbab" />
 T destroy
 <img width="1106" height="523" alt="Screenshot 2026-09-02 160216" src="https://github.com/user-attachments/assets/87588850-3536-4d98-8f13-278329e57e74" />
