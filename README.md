@@ -63,17 +63,20 @@ T destroy
 
 
 ### S3
+The shared S3 bucket that is used for Project 3 from Project1
 <img width="1112" height="482" alt="Screenshot 2026-09-02 153139" src="https://github.com/user-attachments/assets/338aa939-d637-401a-9034-9c855178382d" />
+The S3 state.tfstate object inside the bucket that confirms the storage of the state file remotely 
 <img width="1114" height="499" alt="Screenshot 2026-09-02 153117" src="https://github.com/user-attachments/assets/33ce227a-cd55-4a59-b523-9a011c667415" />
 
 
 ### IAM
 
-
+The permissions granted to the `GithubOIDC-TerraformRole` based on the principle least-privilege 
 
 <img width="1109" height="548" alt="Screenshot 2026-09-02 153013" src="https://github.com/user-attachments/assets/19350412-5c98-468c-b44f-e56482053cbe" />
-
+The JSON trust policy for `GithubOIDC-TerraformRole`
 <img width="1103" height="511" alt="Screenshot 2026-09-02 153030" src="https://github.com/user-attachments/assets/5d8b474c-03ca-474a-9e46-9bdde0744984" />
+The SSM role used by the EC2 instances within the VPC to connect to  AWS Systems Manager
 <img width="1116" height="564" alt="Screenshot 2026-09-02 154517" src="https://github.com/user-attachments/assets/d79cc468-c1ef-4f8d-a9e3-b008e43b2f90" />
 
 
