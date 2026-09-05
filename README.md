@@ -40,10 +40,33 @@
 
 # Architecture Tradeoffs
 
-# Future Improvements
-
+# Future Improvment Suggetions
+* Include cost-estimation stage with Infracost to estimate AWS costs before applying
+* Add branch protection and environment approvals to deny unwanted applies or destroys
+* Enable S3 backend versioning to preserve Terraform state history and simplify rolling back
+  changes
+* Include notifications via email or slack for pipeline success/failure
+* Introduce Terraform modules for scalable code 
 # Failure Scenario & Recovery Playbook
-
+### Scenario 1
+GitHub Actions fails to assume AWS role
+### Recovery
+* Verify trust policy JSON has the exact GitHub repo and branch name
+* Confirm workflow permissions in YAML file
+* Re-run workflow job after updates
+### Scenario 2
+Terraform cannot access or locate remote state 
+### Recovery
+* Check backend configuration
+* Verify matching bucket name and IAM role permissions
+* Run Terraform init to verify S3 backend is recognized
+### Scenario 3
+Terraform destroy fails to destroy proper resources
+### Recovery
+* Check the same S3 backend is shared with IAM permissions
+* Verify right region is picked in Terraform-Destroy YAML file
+* Valdiate and plan resources needed to be destroyed when running workflow
+* Type "DESTROY" in proper caps to validate workflow run to destroy resources
 # Lessons Learned
 ### OIDC Authentication
 * Setting up OIDC requires underrstanding how GitHub Actions recognizes a workflow with token claims(iss,aud,sub)
