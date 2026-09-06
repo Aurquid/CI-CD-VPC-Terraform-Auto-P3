@@ -93,7 +93,7 @@ The CI/CD pipeline validates Terraform initialization ,plans resource changes, a
 * **Least-Privilege IAM Roles** vs **Broad Permissions:** Least-privilege reduces attack surface under control with  permissions but can require more IAM debugging when something is denied
 * **Full CI/CD** vs **Manual Terraform Deployment:** Automating resources adds validation and consistency to deployment but can be difficult to debug compared of local terminal
 * **Separate IAM Roles** vs **One Shared Role:** Separate roles follows least-privilege but can add IAM complexity
-* **CI/CD Destroy** vs **Manual Destroy:** CI/CD destroy provides clean destruction of resources but can be risky if not properly configured or triggered unintentially
+* **CI/CD Destroy** vs **Manual Destroy:** CI/CD destroy provides clean destruction of resources but can be risky if not properly configured or triggered unintentionally
 
 # Future Improvement Suggestions
 * Include cost-estimation stage with Infracost to estimate AWS costs before applying
@@ -119,7 +119,7 @@ Terraform cannot access or locate remote state
 * Check backend configuration
 * Verify matching bucket name and IAM role permissions
 * Run Terraform init to verify S3 backend is recognized
-### Prevenetion
+### Prevention
 * Restrict IAM so only OIDC role can access S3 bucket
 * Enable S3 bucket versioning to protect state files
 ### Scenario 3
@@ -127,15 +127,15 @@ Terraform destroy fails to destroy proper resources
 ### Recovery
 * Check the same S3 backend is shared with IAM permissions
 * Verify right region is picked in Terraform-Destroy YAML file
-* Valdiate and plan resources needed to be destroyed when running workflow
+* Validate and plan resources needed to be destroyed when running workflow
 * Type "DESTROY" in proper caps to validate workflow run to destroy resources
 ### Prevention
 * Use same S3 backend block for apply and destroy
 * Tag all resources with a consistent label to make tracking easier
-* 
+
 # Lessons Learned
 ### OIDC Authentication
-* Setting up OIDC requires underrstanding how GitHub Actions recognizes a workflow with token claims(iss,aud,sub)
+* Setting up OIDC requires understanding how GitHub Actions recognizes a workflow with token claims(iss,aud,sub)
 * The trust policy must match the exact `sub` format to avoid AWS rejecting the `GithubOIDC-TerraformRole`
 * OIDC removes the need for long-lived AWS keys
 ### S3 Remote State Backend
