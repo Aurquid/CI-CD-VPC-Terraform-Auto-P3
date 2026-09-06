@@ -13,7 +13,7 @@ This project demonstrates a secure CI/CD pipeline using Terraform and GitHub act
 * [Cost Breakdown](#cost-breakdown)
 * [Cost Analysis](#cost-analysis)
 * [Architecture Tradeoffs](#architecture-tradeoffs)
-* [Future Improvements](#future-improvements)
+* [Future Improvements](#future-improvements-suggestions)
 * [Failure Scenario & Recovery Playbook](#failure-scenario--recovery-playbook)
 * [Lessons Learned](#lessons-learned)
 * [Screenshots](#screenshots)
@@ -27,7 +27,7 @@ The CI/CD pipeline validates Terraform initialization ,plans resource changes, a
 * S3( Terraform backend)
 * IAM( OIDC role, EC2 SSM role)
 * VPC
-* EC2tch
+* EC2
 * SSM
 * GitHub Actions(CI/CD pipeline)
 * CloudWatch
