@@ -1,4 +1,5 @@
 # Overview
+This project demonstrates a secure CI/CD pipeline using Terraform and GitHub actions with OIDC authentication. It automates VPC infrastructure and teardown while enforcing least-privilege IAM roles and managing remote state with S3 backend.
 
 # Table of Contents
 * [Overview](#overview)
@@ -11,7 +12,6 @@
 * [Tradeoff Analysis](#tradeoff-analysis)
 * [Cost Breakdown](#cost-breakdown)
 * [Cost Analysis](#cost-analysis)
-* [Cost & Security Considerations](#cost--security-considerations)
 * [Architecture Tradeoffs](#architecture-tradeoffs)
 * [Future Improvements](#future-improvements)
 * [Failure Scenario & Recovery Playbook](#failure-scenario--recovery-playbook)
@@ -21,24 +21,79 @@
 # Architecture Diagram
 
 # Pipeline Summary
+The CI/CD pipeline validates Terraform initialization ,plans resource changes, and applies to AWS while sharing a remote S3 backend with Project1. It authenticates through OIDC, IAM roles, and includes a manual destroy to prevent unintentional destruction. This setup provides validation and consistency to deployments but adds complexity to debugging  due to Terraform runs sent to GitHub Actions logs.
 
 # Services Used
-
-# Folder Structure
+* S3( Terraform backend)
+* IAM( OIDC role, EC2 SSM role)
+* VPC
+* EC2tch
+* SSM
+* GitHub Actions(CI/CD pipeline)
+* CloudWatch
 
 # Deployment Flow
-
+## 1.Pipeline Trigger
+* Workflow starts with workflow_dispatch
+* GitHub Actions authenticates to AWS with OIDC
+## 2. Terraform Initialization
+* Terraform runs terraform init to connect to remote S3 backend and providers
+## 3.Validation and Planning
+* Executes terraform validate and terraform plan to  check syntax and show planned changes
+## 4. Apply Stage
+* Runs terraformapply -auto-approve to create resources
+## 5. Post-Deployment Verification
+* Terraform outputs confirm successful resources
+## 6. Destroy Stage
+* Triggered typing "DESTROY" when running workflow
+* Runs terraform destroy-auto-approve using OIDC role and S3 backend
+* Confirms planned destroy resources and ensure proper destruction 
+  
+ 
 # IAM Least Privilege
-
-# Tradeoff Analysis
+* GitHub Actions uses OIDC for short role-lived tokens
+* Roles are separated under Terraform OIDC role and EC2 SSM role
+* Each role limited to specific AWS services
+* OIDC trust reserved to repo and branch
+* No wildcard actions
+* No admin privileges
 
 # Cost Breakdown
+| Component | Approx.Cost | Notes |
+|---|---|---|
+|EC2 t2.micro|$8-10/mo| charged while running|
+|NAT Gateway| $32-$40/mo| biggest cost driver|
+|S3 Backend| <$1/mo| Minimal cost|
+|Elastic IP| $3-$4/mo| Static IP charge|
+|IAM Roles & OIDC|$0/mo| No direct cost|
+|SSM Access| $0| Free|
+|GitHub Actions| $0-$5/mo| Depends on usage|
 
 # Cost Analysis
-
-# Cost & Security Considerations
+## Usage-Based Cost Behavior
+* **NAT Gateway** incurs the highest cost due to hourly costs and per-GB processed
+* **EC2** costs remain stable unless instance type or region changes
+* **S3 backend** costs are minimal due to state files being small and inconsistent access
+* **IAM + OIDC** have no direct costs
+* **SSM** access is free
+## Cost Risks
+* **High NAT traffic**  can increase costs the most
+* **EC2** configuration can increase compute costs
+* **Multiple environments** increase NAT+EC2 costs
+* **Improper Destruction** can add idle costs
+ ## Optimization Levers 
+ * Replace NAT traffic with **VPC endpoints**
+ * User **smaller EC2 instance types** for dev/test environments
+ * Use **spot instances** for non-critical workloads
+ * Add **scheduled destroy** to remove idle costs
 
 # Architecture Tradeoffs
+* **OIDC** vs **Long-Lived AWS Credentials:** OIDC removes the need for static AWS keys while improving security but can break easily if trust policy or sub claim is incorrect
+* **S3 Backend** vs **Local Terraform State:** Remote state enables CI/CD automation but pipeline can crash if bucket name, region, or IAM is wrong
+* **Least-Privilege IAM Roles** vs **Broad Permissions:** Least-privilege reduces attack surface under control with  permissions but can require more IAM debugging when something is denied
+* **Full CI/CD** vs **Manual Terraform Deployment:** Automating resources adds validation and consistency to deployment but can be difficult to debug compared of local terminal
+* **Separate IAM Roles** vs **One Shared Role:** Separate roles follows least-privilege but can add IAM complexity
+* **CI/CD Destroy** vs **Manual Destroy:** CI/CD destroy provides clean destruction of resources but can be risky if not properly configured or triggered unintentially
 
 # Future Improvment Suggetions
 * Include cost-estimation stage with Infracost to estimate AWS costs before applying
