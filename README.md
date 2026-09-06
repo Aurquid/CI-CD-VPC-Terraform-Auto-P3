@@ -13,7 +13,7 @@ This project demonstrates a secure CI/CD pipeline using Terraform and GitHub act
 * [Cost Breakdown](#cost-breakdown)
 * [Cost Analysis](#cost-analysis)
 * [Architecture Tradeoffs](#architecture-tradeoffs)
-* [Future Improvements](#future-improvements-suggestions)
+* [Future Improvements](#future-improvement-suggestions)
 * [Failure Scenario & Recovery Playbook](#failure-scenario--recovery-playbook)
 * [Lessons Learned](#lessons-learned)
 * [Screenshots](#screenshots)
