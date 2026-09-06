@@ -95,7 +95,7 @@ The CI/CD pipeline validates Terraform initialization ,plans resource changes, a
 * **Separate IAM Roles** vs **One Shared Role:** Separate roles follows least-privilege but can add IAM complexity
 * **CI/CD Destroy** vs **Manual Destroy:** CI/CD destroy provides clean destruction of resources but can be risky if not properly configured or triggered unintentially
 
-# Future Improvment Suggestions
+# Future Improvement Suggestions
 * Include cost-estimation stage with Infracost to estimate AWS costs before applying
 * Add branch protection and environment approvals to deny unwanted applies or destroys
 * Enable S3 backend versioning to preserve Terraform state history and simplify rolling back
