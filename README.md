@@ -109,12 +109,19 @@ GitHub Actions fails to assume AWS role
 * Verify trust policy JSON has the exact GitHub repo and branch name
 * Confirm workflow permissions in YAML file
 * Re-run workflow job after updates
+### Prevention
+* Use hard-coded sub claim in trust policy
+* Avoid renaming branches or repos to prevent policy rejection
+* Implement a CI check that verifies trust policy 
 ### Scenario 2
 Terraform cannot access or locate remote state 
 ### Recovery
 * Check backend configuration
 * Verify matching bucket name and IAM role permissions
 * Run Terraform init to verify S3 backend is recognized
+### Prevenetion
+* Restrict IAM so only OIDC role can access S3 bucket
+* Enable S3 bucket versioning to protect state files
 ### Scenario 3
 Terraform destroy fails to destroy proper resources
 ### Recovery
@@ -122,6 +129,10 @@ Terraform destroy fails to destroy proper resources
 * Verify right region is picked in Terraform-Destroy YAML file
 * Valdiate and plan resources needed to be destroyed when running workflow
 * Type "DESTROY" in proper caps to validate workflow run to destroy resources
+### Prevention
+* Use same S3 backend block for apply and destroy
+* Tag all resources with a consistent label to make tracking easier
+* 
 # Lessons Learned
 ### OIDC Authentication
 * Setting up OIDC requires underrstanding how GitHub Actions recognizes a workflow with token claims(iss,aud,sub)
